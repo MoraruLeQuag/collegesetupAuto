@@ -3,7 +3,8 @@ CHCP 65001
 title College Setup
 
 reg query HKU\S-1-5-19 1>nul 2>nul || (echo Erreur&goto :Admin)
-Reg.exe add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t REG_DWORD /d "0" /f
+Reg.exe add HKLM /F >nul 2>&1
+if %errorlevel% neq 0 start "" /wait /I /min powershell -NoProfile -Command start -verb runas "'%~s0'" && exit /b
  
 
 cls
@@ -23,9 +24,8 @@ start C:\Users\%UserName%\Desktop\SetupCollege\iaca.txt
 
 echo apres installation complete, l'ordinateur va redémarrer...
 powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\Iaca.cmd https://github.com/MoraruLeQuag/collegesetupAuto/raw/main/Iaca.cmd
-powershell New-Item -ItemType SymbolicLink -Path "C:\Users\%username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Name "IACA.lnk" -Value "C:\Users\%username%\Desktop\SetupCollege\IACA.cmd"
 pause
-
+(C:\ProgramData\Microsoft\Windows\"Start Menu"\Programs\Startup)
 powershell Restart-Computer -Force
 
 :Admin

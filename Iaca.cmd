@@ -3,8 +3,8 @@ CHCP 65001
 title College Setup
 
 reg query HKU\S-1-5-19 1>nul 2>nul || (echo Erreur&goto :Admin)
-Reg.exe add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t REG_DWORD /d "0" /f
-
+Reg.exe add HKLM /F >nul 2>&1
+if %errorlevel% neq 0 start "" /wait /I /min powershell -NoProfile -Command start -verb runas "'%~s0'" && exit /b
 rem installation IACA
 :LABEL-3
 if exist "C:\Users\%username%\Desktop\SetupCollege\iaca.txt" (

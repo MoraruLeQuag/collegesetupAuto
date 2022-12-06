@@ -1,3 +1,5 @@
+Reg.exe add HKLM /F >nul 2>&1
+if %errorlevel% neq 0 start "" /wait /I /min powershell -NoProfile -Command start -verb runas "'%~s0'" && exit /b
 rem installation des dépendances
 if not exist "C:\Users\%username%\Desktop\SetupCollege" GOTO Install-Folder
 
