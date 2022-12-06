@@ -18,14 +18,12 @@ if exist "C:\Users\%username%\Desktop\SetupCollege" (
 cls
 netsh exec C:\Users\%UserName%\Desktop\SetupCollege\iaca.txt
 echo Découverte Réseau activée !
-powershell start "\\192.168.224.3\OFC SCAN\autopcp.exe"
+rem powershell start "\\192.168.224.3\OFC SCAN\autopcp.exe"
 start C:\Users\%UserName%\Desktop\SetupCollege\iaca.txt
 
 echo apres installation complete, l'ordinateur va redémarrer...
-powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\Iaca.cmd 
+powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\Iaca.cmd https://github.com/MoraruLeQuag/collegesetupAuto/raw/main/Iaca.cmd
 powershell New-Item -ItemType SymbolicLink -Path "C:\Users\%username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Name "IACA.lnk" -Value "C:\Users\%username%\Desktop\SetupCollege\IACA.cmd"
-
-
 pause
 
 powershell Restart-Computer -Force
