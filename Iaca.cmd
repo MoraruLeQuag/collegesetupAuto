@@ -20,7 +20,7 @@ echo Découverte Réseau activée !
 powershell start "\\0511038A-DC1\Netlogon\Client.exe"
 echo Un redemarrage est necessaire afin de continuer...
 powershell Remove-Item -Path "C:\Users\%username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Iaca.ink"
-powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\Applications.cmd {chemin github}
+powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\Applications.cmd https://github.com/MoraruLeQuag/collegesetupAuto/raw/main/applications.cmd
 powershell New-Item -ItemType SymbolicLink -Path "C:\Users\%username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Name "applications.lnk" -Value "C:\Users\%username%\Desktop\SetupCollege\applications.cmd"
 pause 
 powershell Restart-Computer -Force
