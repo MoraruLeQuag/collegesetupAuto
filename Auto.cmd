@@ -6,18 +6,16 @@ Reg.exe add HKLM /F >nul 2>&1
 if %errorlevel% neq 0 start "" /wait /I /min powershell -NoProfile -Command start -verb runas "'%~s0'" && exit /b
 reg query HKU\S-1-5-19 1>nul 2>nul || (echo Erreur&goto :Admin)
 
+powershell if ((gwmi win32_computersystem).partofdomain -eq $true){ New-Item C:\Users\%username%\Desktop\SetupCollege\DomainCheck.txt -type file }
 
-if ((gwmi win32_computersystem).partofdomain -eq $False) { GOTO DOMAIN } rem si le pc n'est pas dans le domaine ça lance la fonction domain
-else 
-{
-	mkdir "C:\Users\%username%\Desktop\CollegeSetup\DomainCheck" rem Si le pc est dans le domaine, ça créer le dossier
-}
-if exist "C:\Users\%username%\Desktop\CollegeSetup\DomainCheck" { GOTO OFCScan } rem Si le dossier domain exist, ça lance ofc scan
-if exist "C:\Users\%username%\Desktop\CollegeSetup\Scan_Check" { GOTO IACA } rem si le dossier scan exist, ça lance IACA
-if exist "C:\Users\%username%\Desktop\CollegeSetup\IacaCheck" { GOTO SOFTWARE } rem si IACA est bien installé, ça installes le reste des applis + cleanup
+if not exist "C:\Users\%username%\Desktop\SetupCollege\DomainCheck.txt" GOTO DOMAIN
+if not exist "C:\Users\%username%\Desktop\SetupCollege\Scan_Check.txt" GOTO OFCScan
+if not exist "C:\Users\%username%\Desktop\SetupCollege\IACACheck.txt" GOTO IACA
+GOTO SOFTWARE
+ 
 
-
-:Domain
+:DOMAIN
+cls
 rem Ici, cela touche au domaine et cela change le nom pour s'adapter a IACA
 SET /P choice=Type the new Computer Name (without space) then press ENTER:
 SET /P choiceverif= "%choice% est-il correct ? (yes / no / cancel):"
@@ -36,18 +34,15 @@ powershell remove-item "C:\Users\%username%\Desktop\Auto.cmd" /F
 powershell Add-Computer -DomainName %domain% -Credential "Admin1" -Restart
 
 :DomainChangerNo
-cls
-GOTO LABEL-1
+EXIT
 
 :DomainChangerCancel
-echo Commande annulee.
+
 EXIT 
 
 :OFCScan
-cls
 cd "C:\Users\%username%\Desktop\SetupCollege"
 powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\iaca.txt https://raw.githubusercontent.com/MoraruLeQuag/CollegeSetup/main/iaca.txt
-cls
 netsh exec C:\Users\%UserName%\Desktop\SetupCollege\iaca.txt
 echo Découverte Réseau activée !
 rem powershell start "\\192.168.224.3\OFC SCAN\autopcp.exe"
@@ -56,20 +51,19 @@ echo.
 echo.
 echo.
 echo après installation complète, l'ordinateur va redémarrer...
-mkdir "C:\Users\%username%\Desktop\Scan_Check"
+powershell New-Item "C:\Users\%username%\Desktop\SetupCollege\Scan_Check.txt" -type file 
 pause
 powershell Restart-Computer -Force
 
 :IACA
-cls
 cd "C:\Users\%username%\Desktop\SetupCollege"
 powershell wget -outf C:\Users\%username%\Desktop\SetupCollege\iaca.txt https://raw.githubusercontent.com/MoraruLeQuag/CollegeSetup/main/iaca.txt
-cls
+
 netsh exec C:\Users\%username%\Desktop\SetupCollege\iaca.txt
 echo Découverte Réseau activée !
 powershell start "\\0511038A-DC1\Netlogon\Client.exe"
 echo Un redémarrage est nécessaire afin de continuer...
-mkdir "C:\Users\%username%\Desktop\Scan_Check"
+powershell New-Item "C:\Users\%username%\Desktop\IACACheck.txt" -type file  
 pause
 powershell Restart-Computer -Force
 
@@ -138,5 +132,7 @@ rem insérer un bonus
 pause >nul
 
 
-
-
+:Admin
+rem Return si lancé sans droits admin
+echo Ce script doit être lance en Administrateur.
+pause >nul
